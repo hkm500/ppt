@@ -1,0 +1,178 @@
+{
+ "logo.jpeg": {
+  "w": 1280,
+  "h": 818
+ },
+ "email.png": {
+  "w": 1220,
+  "h": 618
+ },
+ "wp_abstract.png": {
+  "w": 1617,
+  "h": 1115
+ },
+ "navajo.png": {
+  "w": 549,
+  "h": 500
+ },
+ "turing.png": {
+  "w": 264,
+  "h": 369
+ },
+ "xm_claim_bad.png": {
+  "w": 844,
+  "h": 476
+ },
+ "xm_claim_good.png": {
+  "w": 836,
+  "h": 470
+ },
+ "sign_flow.png": {
+  "w": 1232,
+  "h": 336
+ },
+ "bitcoin_card.png": {
+  "w": 766,
+  "h": 442
+ },
+ "mysql_md5.png": {
+  "w": 1254,
+  "h": 834
+ },
+ "hash_fig.png": {
+  "w": 1040,
+  "h": 1227
+ },
+ "merkle4.png": {
+  "w": 793,
+  "h": 583
+ },
+ "merkle_tamper.png": {
+  "w": 773,
+  "h": 514
+ },
+ "chain_strip.png": {
+  "w": 1326,
+  "h": 300
+ },
+ "chain_detail.png": {
+  "w": 1306,
+  "h": 576
+ },
+ "block_hdr.png": {
+  "w": 840,
+  "h": 742
+ },
+ "block_hash.png": {
+  "w": 1240,
+  "h": 606
+ },
+ "poly1.png": {
+  "w": 1230,
+  "h": 508
+ },
+ "poly2.png": {
+  "w": 1242,
+  "h": 528
+ },
+ "poly3.png": {
+  "w": 1246,
+  "h": 520
+ },
+ "nonce_list.png": {
+  "w": 2002,
+  "h": 626
+ },
+ "coinbase.png": {
+  "w": 748,
+  "h": 364
+ },
+ "tx_flow_book.png": {
+  "w": 1173,
+  "h": 628
+ },
+ "chart_conf_time.png": {
+  "w": 2520,
+  "h": 1357
+ },
+ "chart_fee.png": {
+  "w": 2574,
+  "h": 1381
+ },
+ "mtgox.png": {
+  "w": 717,
+  "h": 539
+ },
+ "tweet_biden_obama.png": {
+  "w": 653,
+  "h": 378
+ },
+ "tweet_kanye.png": {
+  "w": 727,
+  "h": 421
+ },
+ "asic.png": {
+  "w": 1046,
+  "h": 1113
+ },
+ "farm.png": {
+  "w": 1143,
+  "h": 778
+ },
+ "ndrc_notice.png": {
+  "w": 1065,
+  "h": 929
+ },
+ "carney.png": {
+  "w": 279,
+  "h": 364
+ },
+ "carstens.png": {
+  "w": 227,
+  "h": 227
+ },
+ "s2f_chart.png": {
+  "w": 1785,
+  "h": 972
+ },
+ "s2f_panel.png": {
+  "w": 1329,
+  "h": 423
+ },
+ "silkroad.png": {
+  "w": 787,
+  "h": 613
+ },
+ "ulbricht.png": {
+  "w": 747,
+  "h": 295
+ },
+ "wp_2_transactions.png": {
+  "w": 846,
+  "h": 501
+ },
+ "wp_3_timestamp.png": {
+  "w": 917,
+  "h": 342
+ },
+ "wp_4_pow.png": {
+  "w": 891,
+  "h": 471
+ },
+ "wp_5_network.png": {
+  "w": 939,
+  "h": 288
+ },
+ "wp_6_incentive.png": {
+  "w": 861,
+  "h": 420
+ },
+ "wp_7_disk.png": {
+  "w": 927,
+  "h": 686
+ },
+ "wp_8_spv.png": {
+  "w": 876,
+  "h": 551
+ }
+}
