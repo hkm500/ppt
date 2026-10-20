@@ -90,11 +90,16 @@ MODES = ("ppt", "lo")
 AUTOSPACE = 0.25
 
 
+_MONO_ALL = False   # 段内含 `代码` 时，估算时把西文统一按等宽 0.6em 算（保守）
+
+
 def char_em(ch, mode="ppt"):
     """字符宽度（以 em 计）。CJK 与全角标点按 1em，西文按 Times New Roman 近似。"""
     o = ord(ch)
     if ch == " ":
         return 0.25
+    if _MONO_ALL and o < 0x80:
+        return 0.6
     if o < 0x80:
         if ch.isdigit():
             return 0.5
@@ -140,12 +145,17 @@ def _tokens(text, bold=False, mode="ppt"):
             toks.append((buf, bw))
             buf, bw = "", 0.0
 
-    for ch in text:
+    for i, ch in enumerate(text):
         o = ord(ch)
         w = char_em(ch, mode) * (1.07 if (bold and o < 0x80) else 1.0)
         if o < 0x80 and ch != " " and ch not in _NO_BREAK_AFTER:
             buf += ch
             bw += w
+            prv = text[i - 1] if i > 0 else ""
+            nxt = text[i + 1] if i + 1 < len(text) else ""
+            if nxt.isascii() and nxt.isalpha() and (
+                    (ch == "-" and prv.isascii() and prv.isalpha()) or (ch == "/" and mode == "lo")):
+                flush()  # 连字符 / 斜杠之后允许断行
             continue
         if ch == " ":
             flush()
@@ -162,12 +172,12 @@ def _tokens(text, bold=False, mode="ppt"):
         else:
             toks.append((ch, w))
     flush()
-    if mode == "lo":  # 中西文交界自动间距
+    if mode == "lo":  # 中西文（含空格、标点、运算符）交界自动间距，约 0.25em
         out = []
         for i, (t, w) in enumerate(toks):
-            if i > 0 and t != " " and out and out[-1][0] != " ":
+            if i > 0 and out:
                 a, b = out[-1][0][-1], t[0]
-                if (ord(a) > 127 and _is_latin(b)) or (_is_latin(a) and ord(b) > 127):
+                if (ord(a) > 127) != (ord(b) > 127):
                     w += AUTOSPACE
             out.append((t, w))
         toks = out
@@ -300,11 +310,11 @@ class Para:
         if k in ("b1", "hb"):
             ppr = ('<a:pPr marL="342900" indent="-342900" algn="l" eaLnBrk="1" fontAlgn="auto" hangingPunct="1">'
                    f'<a:spcBef><a:spcPts val="0"/></a:spcBef><a:spcAft><a:spcPts val="{int(spc_aft * 100)}"/></a:spcAft>'
-                   '<a:buFont typeface="Arial"/><a:buChar char="•"/></a:pPr>')
+                   '<a:buClr><a:srgbClr val="000000"/></a:buClr><a:buFont typeface="Arial"/><a:buChar char="•"/></a:pPr>')
         elif k == "b2":
             ppr = ('<a:pPr marL="742950" lvl="1" indent="-285750" algn="l" eaLnBrk="1" fontAlgn="auto" hangingPunct="1">'
                    f'<a:spcBef><a:spcPts val="0"/></a:spcBef><a:spcAft><a:spcPts val="{int(spc_aft * 100)}"/></a:spcAft>'
-                   '<a:buFont typeface="Arial"/><a:buChar char="–"/></a:pPr>')
+                   '<a:buClr><a:srgbClr val="000000"/></a:buClr><a:buFont typeface="Arial"/><a:buChar char="–"/></a:pPr>')
         else:
             ppr = ('<a:pPr marL="0" indent="0" algn="l" eaLnBrk="1" fontAlgn="auto" hangingPunct="1">'
                    f'<a:spcBef><a:spcPts val="0"/></a:spcBef><a:spcAft><a:spcPts val="{int(spc_aft * 100)}"/></a:spcAft>'
@@ -322,7 +332,13 @@ class Para:
             return max(8, S // 2) * LINE_K, 0.0, 1, sz
         w = width_pt - self.marL() / EMU_PT
         txt = plain_text(self.text)
-        n, last = wrap_stats(txt, sz, w, self.kind in ("h", "hb", "red"), mode)
+        bold = self.kind in ("h", "hb", "red") or "[[" in self.text or "**" in self.text
+        global _MONO_ALL
+        _MONO_ALL = "`" in self.text
+        try:
+            n, last = wrap_stats(txt, sz, w, bold, mode)
+        finally:
+            _MONO_ALL = False
         return n * sz * LINE_K + spc_aft, last, n, sz
 
 
@@ -469,12 +485,14 @@ class Deck:
         self.count += 1
         sz = title_size(title)
         tree.append(etree.fromstring(title_xml(2, title, sz)))
-        self._sid = 3
+        self._tree = tree
         return slide, tree
 
     def _id(self):
-        self._sid += 1
-        return self._sid
+        """下一个未被占用的形状 id（图片由 python-pptx 另行分配，需避开）。"""
+        ids = [int(e.get("id")) for e in self._tree.iter()
+               if e.tag.endswith("}cNvPr") and str(e.get("id", "")).isdigit()]
+        return max(ids + [1]) + 1
 
     def _notes(self, slide, notes):
         if not notes:
@@ -546,7 +564,7 @@ class Deck:
         sw = float(sum(weights))
         cw = [total_w * v / sw for v in weights]
         box_w = total_w + 39200
-        inner_pt = (box_w - 2 * INS_LR) / EMU_PT
+        inner_pt = (box_w - 2 * INS_LR) / EMU_PT * 0.97  # lead/foot 略保守，避免估算偏小压住表格
         lead_paras = [Para.parse(i) for i in (lead or [])]
         if isinstance(foot, str):
             foot = [foot]
@@ -562,7 +580,9 @@ class Deck:
                 + 2 * INS_TB + 60000
         sizes = [fs] if fs else [18, 17, 16, 15, 14, 13, 12]
         chosen = None
+        cw0 = list(cw)
         for sz in sizes:
+            cw = self._opt_widths(cw0, header, rows, sz, first_bold, total_w)
             heights = self._row_heights(header, rows, cw, sz, min_row, first_bold)
             tbl_h = sum(heights)
             foot_h = 0
@@ -570,10 +590,10 @@ class Deck:
                 foot_h = max(sum(q.height_pt(foot_size, inner_pt, 4, m)[0] for q in foot_paras) for m in MODES) \
                     * EMU_PT + 2 * INS_TB + 200000
             bottom = y + lead_h + tbl_h + foot_h
-            chosen = (sz, heights, tbl_h, foot_h, bottom)
+            chosen = (sz, heights, tbl_h, foot_h, bottom, cw)
             if bottom <= 6700000:
                 break
-        sz, heights, tbl_h, foot_h, bottom = chosen
+        sz, heights, tbl_h, foot_h, bottom, cw = chosen
         if bottom > 6700000:
             self.warn(f"表格溢出：{title}（底边{bottom / 12700:.0f}pt，字号{sz}）")
         if lead_paras:
@@ -588,6 +608,72 @@ class Deck:
         self._notes(slide, notes)
         self.log.append((self.count, title, "table", sz, src))
         return slide
+
+    def _table_cost(self, cw, header, rows, sz, first_bold):
+        """列宽方案的代价：单元格孤字行×1000 + 各行高度之和(pt)。"""
+        orph = 0
+        total = 0.0
+        for ri, row in enumerate([header] + rows):
+            hmax = 0.0
+            for ci, cell in enumerate(row):
+                width_pt = (cw[ci] - 2 * 72000) / EMU_PT
+                bold = ri == 0 or (ci == 0 and first_bold)
+                lines = 0
+                bad = False
+                for line in str(cell).split("\n"):
+                    wn = 0
+                    for m in MODES:
+                        n, last = wrap_stats(plain_text(line), sz, width_pt, bold, m)
+                        wn = max(wn, n)
+                        if n > 1 and 0 < last < 2.2 * sz:
+                            bad = True
+                    lines += wn
+                orph += 1 if bad else 0
+                hmax = max(hmax, lines * sz * LINE_K + 8.2)
+            total += hmax
+        return orph * 1000 + total, orph
+
+    def _opt_widths(self, cw, header, rows, sz, first_bold, total_w):
+        """在原列宽附近微调（每列 ≥ 最长不可断词，且不偏离原宽 ±40%），尽量消除单元格孤字行并压低表高。"""
+        n = len(cw)
+        base = list(cw)
+        lo = []
+        for ci in range(n):
+            tokw = 3.0
+            for ri, row in enumerate([header] + rows):
+                for line in str(row[ci]).split("\n"):
+                    for t, w in _tokens(plain_text(line), True, "lo"):
+                        tokw = max(tokw, w)
+            lo.append(max(tokw * sz * EMU_PT + 2 * 72000 + 30000, base[ci] * 0.6))
+        hi = [b * 1.4 for b in base]
+        cur = list(base)
+        best, borph = self._table_cost(cur, header, rows, sz, first_bold)
+        if borph == 0:
+            return cur
+        step = total_w * 0.015
+        for _ in range(60):
+            improved = False
+            cand_best = None
+            for i in range(n):
+                for j in range(n):
+                    if i == j:
+                        continue
+                    for k in (1, 2, 4, 6):
+                        d = step * k
+                        if cur[j] - d < lo[j] or cur[i] + d > hi[i]:
+                            continue
+                        trial = list(cur)
+                        trial[i] += d
+                        trial[j] -= d
+                        c, o = self._table_cost(trial, header, rows, sz, first_bold)
+                        if c < best - 0.01 and (cand_best is None or c < cand_best[0]):
+                            cand_best = (c, o, trial)
+            if cand_best:
+                best, borph, cur = cand_best
+                improved = True
+            if not improved or borph == 0:
+                break
+        return cur
 
     def _row_heights(self, header, rows, cw, sz, min_row, first_bold=True):
         out = []
@@ -683,7 +769,7 @@ class Deck:
         else:
             raise ValueError(layout)
         self._notes(slide, notes)
-        self.log.append((self.count, title, "pic:" + layout, 0, src))
+        self.log.append((self.count, title, "pic:" + layout, S, src))
         return slide
 
     # ---------------- 保存 -----------------

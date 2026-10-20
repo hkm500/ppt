@@ -15,14 +15,14 @@ def supply_curve():
     ax.plot(years[:5], pct[:5], color=NAVY, lw=2.6, marker="o", ms=6)
     ax.plot(years[4:], pct[4:], color=NAVY, lw=2.6, ls="--", marker="o", ms=6, alpha=0.75)
     ax.plot([years[4]], [pct[4]], "o", color=RED, ms=9, zorder=5)
-    labels = [(2012.91, 50, "第1次减半 50%", (12, -20)),
-              (2016.52, 75, "第2次 75%", (12, -20)),
-              (2020.36, 87.5, "第3次 87.5%", (12, -20)),
-              (2024.30, 93.75, "第4次（2024年4月）93.75%", (10, -26))]
+    labels = [(2012.91, 50, "第1次减半 50%", (14, -8)),
+              (2016.52, 75, "第2次 75%", (-10, 8)),
+              (2020.36, 87.5, "第3次 87.5%", (-10, 8)),
+              (2024.30, 93.75, "第4次（2024年4月）93.75%", (-10, 15))]
     for x, y, t, off in labels:
         ax.annotate(t, (x, y), textcoords="offset points", xytext=off, fontsize=13,
-                    color=RED if x == 2024.30 else "#202020", ha="left")
-    ax.text(2043.6, 80, "虚线为预计：96.9% → 98.4% → 99.2% → 99.6% …", fontsize=12, color=GREY, ha="right")
+                    color=RED if x == 2024.30 else "#202020", ha="left" if x == 2012.91 else "right")
+    ax.text(2043.6, 68, "虚线为预计：96.9% → 98.4% → 99.2% → 99.6% …", fontsize=12, color=GREY, ha="right")
     ax.annotate("约2140年发完", (2043.3, 100), textcoords="offset points", xytext=(0, 8), fontsize=12,
                 color=GREY, ha="right")
     ax.set_xlim(2008, 2044)
