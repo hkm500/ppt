@@ -467,7 +467,7 @@ function sectionSlide(o) {
   CUR = { title: 'section ' + o.n };
   const s = pres.addSlide({ masterName: 'SECTION', sectionTitle: currentSection });
   s.addText(o.n, { x: MX, y: 0.7, w: 4, h: 1.5, fontSize: 96, bold: true, color: C.accent1, margin: 0, isTextBox: true, valign: 'top' });
-  if (o.icon) s.addImage({ data: ic(o.icon, 'F7931A'), x: 7.0, y: 0.9, w: 2.0, h: 2.0, altText: o.icon, transparency: 25 });
+  if (o.icon) s.addImage({ data: ic(o.icon, 'F7931A'), x: 7.4, y: 0.5, w: 1.8, h: 1.8, altText: o.icon, transparency: 25 });
   s.addText(o.title, { x: MX, y: 2.55, w: 9, h: 1.3, fontSize: 40, bold: true, color: C.background1, margin: 0, isTextBox: true, valign: 'top' });
   if (nLines(o.title, 9, 40) > 2) warn('section title > 2 lines');
   s.addText(o.sub, { x: MX, y: 3.95, w: 8.6, h: 1.1, fontSize: 20, color: C.accent5, margin: 0, isTextBox: true, valign: 'top' });

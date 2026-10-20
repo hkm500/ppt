@@ -1,4 +1,6 @@
 node_modules/
 out/
-*.pdf
 render/
+render2/
+assets/
+*.pdf

@@ -165,7 +165,7 @@ module.exports = async (L) => {
     tag: '积木三 · 区块', title: '如果改动第 N 块里的一笔交易，会发生什么？',
     notes: '【说明】这是原课件第 59 页用红字提出的问题，这里给出完整的“多米诺骨牌”答案。\n【答案】① 该笔交易的哈希变 → ② 默克尔根变 → ③ 第 N 块的区块头变，区块哈希变 → ④ 第 N+1 块里记录的 Prev Hash 不再匹配，必须同步修改，于是第 N+1 块的哈希也变 → ⑤ 之后的每一块都要重做。\n【关键】每块的区块哈希都必须满足工作量证明（前面若干个 0）。改动一块后，要让它重新“合格”，就得重新挖这一块，以及之后所有块——这正是下一部分要讲的：把“改账”变成一件极其昂贵的事。',
   });
-  [['改动第 N 块里的一笔交易', C.accent2, C.background1], ['该交易的哈希变 → Merkle 根变', C.background2, C.text1], ['第 N 块的区块哈希变', C.background2, C.text1], ['第 N+1 块的 Prev Hash 对不上，必须同步修改', C.background2, C.text1], ['之后的每一块都要重做', C.accent1, C.text1]].forEach((r, i) => {
+  [['改动第 N 块里的一笔交易', C.accent2, C.background1], ['该交易的哈希变 → Merkle 根变', C.background2, C.text1], ['第 N 块的区块哈希变', C.background2, C.text1], ['第 N+1 块的 Prev Hash 对不上，须同步修改', C.background2, C.text1], ['之后的每一块都要重做', C.accent1, C.text1]].forEach((r, i) => {
     const y = 1.55 + i * 0.98;
     rect(s, 0.5, y, 5.5, 0.8, { fill: r[1] });
     numBadge(s, i + 1, 0.65, y + 0.14, 0.52, i === 0 ? C.background1 : C.text1, i === 0 ? C.accent2 : C.background1, 16);

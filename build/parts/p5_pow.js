@@ -123,7 +123,7 @@ module.exports = async (L) => {
   blk(0.5, 2.55, '区块 N−2', C.background2, C.text1); blk(2.2, 2.55, '区块 N−1', C.background2, C.text1);
   blk(4.2, 1.8, '区块 N（A）', C.accent1, C.text1); blk(4.2, 3.4, '区块 N（B）', C.background1, C.accent4, true); blk(6.2, 1.8, '区块 N+1', C.accent1, C.text1);
   arrow(s, 1.85, 2.95, 2.15, 2.95, { color: C.accent4 }); arrow(s, 3.55, 2.8, 4.15, 2.3, { color: C.accent4 }); arrow(s, 3.55, 3.1, 4.15, 3.8, { color: C.accent4, dash: 'dash' }); arrow(s, 5.55, 2.2, 6.15, 2.2, { color: C.accent4 });
-  chip(s, '✓ 累计工作量最大，被采纳', 7.55, 1.75, 1.95, 0.9, C.accent3, C.background1, 12);
+  rect(s, 7.55, 1.75, 1.95, 0.8, { fill: C.accent3 }); T(s, [{ t: '✓ 累计工作量最大，被采纳', bold: true }], { x: 7.6, y: 1.75, w: 1.85, h: 0.8, size: 13, color: C.background1, align: 'center', valign: 'middle' });
   T(s, '孤块：B 中的交易退回内存池', { x: 5.65, y: 3.55, w: 2.6, h: 0.5, size: 14, color: C.accent4 });
   bullets(s, [
     '分叉**不可避免**：两个矿工几乎同时找到区块',

@@ -5,7 +5,7 @@ module.exports = async (L) => {
   L.section('积木二 · 哈希与默克尔树');
   L.sectionSlide({
     n: '03', title: '积木二：哈希函数与默克尔树', icon: 'FaFingerprint', req: [2],
-    sub: '一整块交易怎样压成“一枚指纹”？谁改动哪怕一个字节，都能被立刻发现？',
+    sub: '一整块交易怎样压成“一枚指纹”？谁改一个字节，都能被立刻发现？',
     notes: '【讲解】这块积木回答第三个要求的一半：记录要“可验证、不可更改”。哈希函数给数据做指纹；默克尔树把一大批指纹合并成一枚。\n【预告】本部分 11 页：为什么需要哈希 → 哈希的性质 → 真实的 SHA-256 → 不是加密/碰撞 → SHA-256 规格 → 日常用途 → 默克尔树构建/防篡改/证明 → 现实用途 → 小测。',
   });
 
@@ -45,7 +45,7 @@ module.exports = async (L) => {
     src: '作者用 Python hashlib 实际计算；演示网站：Anders Brownworth, Blockchain Demo（andersbrownworth.com/blockchain）',
     notes: '【讲解】这页的哈希值都是真实计算出来的 SHA-256（原课件的示例是 32 位十六进制的占位串，与“SHA-256 输出 64 个字符”的正文矛盾，现已替换）。\n【观察】bitcoin 和 Bitcoin 只差一个字母的大小写，256 位输出中有 138 位不同（约 54%，几乎正好一半）——这就是雪崩效应：改动微小，输出无法预测。末尾多一个空格同样如此。\n【课堂实验】让学生打开 Anders Brownworth 的 Blockchain Demo（andersbrownworth.com/blockchain）的 Hash 页面，输入自己的名字，再改一个字母，观察输出。\n【可重复验证】在终端运行：python3 -c "import hashlib;print(hashlib.sha256(b\'bitcoin\').hexdigest())"。',
   });
-  const rows3 = [['bitcoin', D.sha['bitcoin']], ['Bitcoin', D.sha['Bitcoin']], ['“bitcoin ”（末尾多一个空格）', D.sha['bitcoin ']]];
+  const rows3 = [['bitcoin', D.sha['bitcoin']], ['Bitcoin', D.sha['Bitcoin']], ['“bitcoin ”（末尾加空格）', D.sha['bitcoin ']]];
   rows3.forEach((r, i) => {
     const y = 1.6 + i * 1.12;
     rect(s, 0.5, y, 9, 1.0, { fill: C.background2 });
@@ -96,7 +96,7 @@ module.exports = async (L) => {
     notes: '【讲解】图是原课件里的 MySQL 下载页：旁边列出的“MD5”就是文件的哈希，下载后核对，可以确认文件没被替换或损坏。\n【提醒】图里的 MD5 已不再安全，今天应当使用 SHA-256；放在这里只是为了说明“哈希是一种日常的完整性工具”。\n【其他用途】网站不应保存明文口令，而应保存“加盐哈希”；Git 用哈希标识每一次提交；区块链用哈希把区块“链”起来。',
   });
   img(s, 'mysql_md5.png', { x: 0.5, y: 1.6, w: 5.0, h: 3.7, valign: 'top' });
-  T(s, '图中的 MD5 已不再安全，今天应使用 SHA-256；此处仅作演示。', { x: 0.5, y: 5.45, w: 5.0, h: 0.7, size: 13, color: C.accent4 });
+  T(s, '图中的 MD5 已不再安全，今天应使用 SHA-256；此处仅作演示。', { x: 0.5, y: 5.0, w: 5.0, h: 0.7, size: 13, color: C.accent4 });
   bullets(s, [
     '**软件下载**：核对哈希，确认文件没被替换',
     '**网站口令**：保存“加盐哈希”，而不是明文',
@@ -112,11 +112,11 @@ module.exports = async (L) => {
     notes: '【讲解】Ralph Merkle 在 1979 年（斯坦福博士论文与专利）提出这种结构。他同时也是公钥密码学的先驱之一，Merkle puzzles 是公钥思想的早期形式——所以他的名字在这一章出现了两次。\n【构造】① 对每笔交易分别计算哈希，这些哈希是树的“叶子”；② 把相邻两个哈希拼起来再哈希，得到上一层的节点；③ 重复，直到只剩一个——这就是“根哈希”（Merkle Root），它相当于整组交易的唯一指纹。\n【细节】如果某一层节点数是奇数，比特币会把最后一个哈希复制一份凑成偶数。比特币每个区块头里只放这一枚根。',
   });
   img(s, 'merkle4.png', { x: 0.5, y: 1.55, w: 5.2, h: 3.9, valign: 'top' });
-  [['1', '对每笔交易分别计算哈希：叶子'], ['2', '两两拼接，再次哈希'], ['3', '重复，直到只剩一个：**根哈希**']].forEach((r, i) => {
+  [['1', '每笔交易算一个哈希：叶子'], ['2', '两两拼接，再次哈希'], ['3', '重复，直到只剩一个：**根哈希**']].forEach((r, i) => {
     const y = 1.65 + i * 1.2;
     rect(s, 5.95, y, 3.55, 1.0, { fill: C.background2 });
     numBadge(s, r[0], 6.1, y + 0.22, 0.56, C.accent1, C.text1, 18);
-    T(s, r[1], { x: 6.8, y: y + 0.05, w: 2.6, h: 0.9, size: 15, valign: 'middle' });
+    T(s, r[1], { x: 6.8, y: y + 0.05, w: 2.65, h: 0.9, size: 14, valign: 'middle' });
   });
   callout(s, '比特币区块头里只放这一枚 32 字节的根；它就是整块交易的**唯一数字指纹**。', { y: 5.65, h: 0.95, size: 15 });
 
