@@ -1,0 +1,4 @@
+out/
+render/
+gen/
+__pycache__/
