@@ -17,44 +17,44 @@ def _merkle_proof_png():
     from charts import OUT, NAVY, RED
 
     path = os.path.join(OUT, "p3_merkle_proof.png")
-    W, H = 9.6, 4.9
+    W, H = 8.9, 4.7
     fig, ax = plt.subplots(figsize=(W, H), dpi=200)
     ax.set_xlim(0, W)
     ax.set_ylim(0, H)
     ax.axis("off")
-    bh = 0.52
-    lx = [0.8 + i * 1.14 for i in range(8)]
+    bh = 0.56
+    lx = [0.62 + i * 1.09 for i in range(8)]
     l1 = [(lx[2 * i] + lx[2 * i + 1]) / 2 for i in range(4)]
     l2 = [(l1[2 * i] + l1[2 * i + 1]) / 2 for i in range(2)]
     root = (l2[0] + l2[1]) / 2
-    Y = {"tx": 0.3, "h": 1.25, "l1": 2.2, "l2": 3.15, "root": 4.1}
+    Y = {"tx": 0.2, "h": 1.17, "l1": 2.14, "l2": 3.11, "root": 4.0}
     nodes = {}
 
     def box(name, cx, y, w, kind=None):
         nodes[name] = (cx, y, w)
         if kind == "path":
-            fc, ec, tc, lw, wt = "#FBE3E3", RED, RED, 1.8, "bold"
+            fc, ec, tc, lw, wt = "#FBE3E3", RED, RED, 2.0, "bold"
         elif kind == "proof":
             fc, ec, tc, lw, wt = NAVY, NAVY, "white", 1.2, "bold"
         else:
             fc, ec, tc, lw, wt = "#F2F2F2", "#BFBFBF", "#404040", 1.0, "normal"
         ax.add_patch(FancyBboxPatch((cx - w / 2, y), w, bh, boxstyle="round,pad=0,rounding_size=0.07",
                                     fc=fc, ec=ec, lw=lw, zorder=3))
-        ax.text(cx, y + bh / 2, name, ha="center", va="center", fontsize=13, color=tc, fontweight=wt, zorder=4)
+        ax.text(cx, y + bh / 2, name, ha="center", va="center", fontsize=15, color=tc, fontweight=wt, zorder=4)
 
     def edge(a, b, hot=False):
         (x1, y1, _), (x2, y2, _) = nodes[a], nodes[b]
-        ax.plot([x1, x2], [y1 + bh, y2], color=RED if hot else "#9A9A9A", lw=2.4 if hot else 1.2, zorder=2,
+        ax.plot([x1, x2], [y1 + bh, y2], color=RED if hot else "#9A9A9A", lw=2.6 if hot else 1.2, zorder=2,
                 solid_capstyle="round")
 
     for i in range(8):
-        box(f"Tx{i + 1}", lx[i], Y["tx"], 0.92, "path" if i == 2 else None)
-        box(f"H{i + 1}", lx[i], Y["h"], 0.92, "path" if i == 2 else ("proof" if i == 3 else None))
+        box(f"Tx{i + 1}", lx[i], Y["tx"], 0.9, "path" if i == 2 else None)
+        box(f"H{i + 1}", lx[i], Y["h"], 0.9, "path" if i == 2 else ("proof" if i == 3 else None))
     for name, cx, kind in (("H12", l1[0], "proof"), ("H34", l1[1], "path"), ("H56", l1[2], None), ("H78", l1[3], None)):
-        box(name, cx, Y["l1"], 1.05, kind)
+        box(name, cx, Y["l1"], 1.0, kind)
     box("H1234", l2[0], Y["l2"], 1.3, "path")
     box("H5678", l2[1], Y["l2"], 1.3, "proof")
-    box("根", root, Y["root"], 1.0, "path")
+    box("根", root, Y["root"], 0.9, "path")
     for i in range(8):
         edge(f"Tx{i + 1}", f"H{i + 1}", i == 2)
     for child, parent, hot in (("H1", "H12", False), ("H2", "H12", False), ("H3", "H34", True), ("H4", "H34", False),
@@ -62,12 +62,12 @@ def _merkle_proof_png():
                                ("H12", "H1234", False), ("H34", "H1234", True), ("H56", "H5678", False),
                                ("H78", "H5678", False), ("H1234", "根", True), ("H5678", "根", False)):
         edge(child, parent, hot)
-    ax.text(root + 0.75, Y["root"] + bh / 2, "写入区块头", ha="left", va="center", fontsize=12, color="#404040")
+    ax.text(root + 0.62, Y["root"] + bh / 2, "写入区块头", ha="left", va="center", fontsize=14, color="#404040")
     # 图例
     for k, (fc, ec, label) in enumerate((("#FBE3E3", RED, "要验证的 Tx3 及其路径"), (NAVY, NAVY, "证明里提供的 3 个哈希"))):
-        y = 4.42 - k * 0.42
-        ax.add_patch(FancyBboxPatch((0.15, y), 0.34, 0.24, boxstyle="round,pad=0,rounding_size=0.04", fc=fc, ec=ec, lw=1.4))
-        ax.text(0.62, y + 0.12, label, ha="left", va="center", fontsize=12, color="#202020")
+        y = 4.28 - k * 0.46
+        ax.add_patch(FancyBboxPatch((0.1, y), 0.36, 0.26, boxstyle="round,pad=0,rounding_size=0.04", fc=fc, ec=ec, lw=1.6))
+        ax.text(0.6, y + 0.13, label, ha="left", va="center", fontsize=14, color="#202020")
     fig.tight_layout(pad=0.3)
     fig.savefig(path, facecolor="white")
     plt.close(fig)
@@ -173,9 +173,9 @@ bitcoin和Bitcoin只差一个字母的大小写，256位输出中有138位不同
     d.table('SHA-256：256位意味着多大的搜索空间？',
             ['量级', '数值'],
             [['2^{256}种可能的输出', '≈1.2×10^{77}'],
-             ['全比特币网络的哈希算力（约1 ZH/s，2026年）', '≈10^{21}次/秒'],
+             ['全网哈希算力（约1 ZH/s，2026年）', '≈10^{21}次/秒'],
              ['以全网算力遍历2^{256}所需的时间', '≈4×10^{48}年（宇宙年龄约1.4×10^{10}年）']],
-            widths=[5.0, 3.8],
+            widths=[4.2, 4.6],
             lead=['- 输出：[[256位 = 32字节 = 64个十六进制字符]]（每个字符4位）',
                   '- 设计：美国国安局（NSA）；NIST于2001年发布（SHA-2家族）',
                   '- 比特币的用法：对区块头做[[两次]]SHA-256'],
